@@ -1,4 +1,107 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hybrid Crypto Lab</title><link rel="stylesheet" href="styles.css"></head>
-<body><main class="shell"><header class="topbar"><a class="brand" href="index.html"><span class="mark">↯</span><span>HYBRID CRYPTO LAB<small>secure exchange / prototype</small></span></a><span class="status"><i></i> TWO-PAGE DEMO</span></header><section class="hero"><div class="eyebrow">A practical two-user prototype</div><h1>Send securely.<br><span style="color:var(--mint)">Unlock locally.</span></h1><p>Alice creates a text-file package. Bob receives the file, metadata, and public key in separate spaces, then verifies and unlocks the matching handoff.</p></section><section class="layout"><a class="panel sender" href="sender.html" style="text-decoration:none;color:inherit"><div class="panel-head"><h2>Sender page / Alice →</h2><p>Create the handoff package</p></div><div class="panel-body"><div class="role"><div class="avatar">A</div><div><b>Give Bob three artifacts</b><span>text file · metadata · public key</span></div></div><div class="notice">Write a message and download the three files Bob needs to receive it.</div></div></a><a class="panel receiver" href="receiver.html" style="text-decoration:none;color:inherit"><div class="panel-head"><h2>Receiver page / Bob →</h2><p>Verify and unlock the package</p></div><div class="panel-body"><div class="role"><div class="avatar">B</div><div><b>Receive in three separate spaces</b><span>file · Metadata · Public key</span></div></div><div class="notice">Attach Alice's artifacts, match the package ID, and recover the text.</div></div></a></section><section class="trace"><div class="trace-head"><span>The handoff in four moves</span><span class="trace-count">START HERE</span></div><div class="trace-row"><div class="trace-step active">01 · Alice<span>writes text</span></div><div class="trace-step">02 · Package<span>three downloads</span></div><div class="trace-step">03 · Bob<span>attaches files</span></div><div class="trace-step">04 · Unlock<span>verify + recover</span></div></div></section><footer class="footer"><span>X25519 + ML-KEM-768 + AES-256-GCM</span><span>LOCAL PROTOTYPE / 2026</span></footer></main></body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hybrid Crypto Lab - Secure File Exchange</title>
+  <meta name="description" content="A two-user hybrid encryption prototype: Alice encrypts locally, Bob verifies and unlocks. X25519 + ML-KEM-768 + AES-256-GCM.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050607'/%3E%3Cpath d='M18 5 9 18h5l-2 9 9-13h-5z' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <svg class="shape-a" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#ffffff" stroke-width="1">
+        <circle cx="470" cy="190" r="230" stroke-opacity=".14"/>
+        <circle cx="470" cy="190" r="150" stroke-opacity=".08"/>
+        <path d="M40 60 L360 380 L430 320 Z" stroke-opacity=".45"/>
+        <path d="M40 60 L430 320 L560 470 Z" stroke-opacity=".28"/>
+        <path d="M40 60 L560 470 L700 640" stroke-opacity=".55"/>
+        <path d="M40 60 L360 380 L250 470 Z" stroke-opacity=".2"/>
+        <path d="M40 60 L250 470 L180 620 Z" stroke-opacity=".14"/>
+        <line x1="40" y1="60" x2="690" y2="560" stroke-opacity=".3" stroke-dasharray="16 8 4 8"/>
+        <line x1="430" y1="320" x2="690" y2="560" stroke-opacity=".18" stroke-dasharray="1 7"/>
+      </g>
+    </svg>
+    <svg class="shape-b" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#ffffff" stroke-width="1">
+        <circle cx="150" cy="500" r="210" stroke-opacity=".12"/>
+        <path d="M600 80 L280 380 L210 320 Z" stroke-opacity=".45"/>
+        <path d="M600 80 L210 320 L90 470 Z" stroke-opacity=".26"/>
+        <path d="M600 80 L90 470 L0 620" stroke-opacity=".5"/>
+        <path d="M600 80 L280 380 L360 500 Z" stroke-opacity=".18"/>
+        <line x1="600" y1="80" x2="20" y2="540" stroke-opacity=".28" stroke-dasharray="16 8 4 8"/>
+        <line x1="210" y1="320" x2="20" y2="540" stroke-opacity=".16" stroke-dasharray="1 7"/>
+      </g>
+    </svg>
+  </div>
+
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="mark">↯</span>
+        <span>HYBRID CRYPTO LAB<small>secure exchange · prototype</small></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html" aria-current="page">Overview</a>
+        <a href="sender.html">Sender</a>
+        <a href="receiver.html">Receiver</a>
+      </nav>
+      <span class="status"><i></i>System ready</span>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">A practical two-user prototype</div>
+      <h1>Send securely.<br><span class="shine">Unlock locally.</span></h1>
+      <p>Alice seals any file with a hybrid post-quantum key. Bob receives the ciphertext, metadata, and public key as separate artifacts — then verifies the package and unlocks it entirely on his own machine.</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="sender.html">Start as Alice →</a>
+        <a class="btn btn-ghost" href="receiver.html">Receive as Bob</a>
+      </div>
+    </section>
+
+    <div class="specs">
+      <div class="spec"><b>X25519</b><span>Elliptic-curve agreement</span></div>
+      <div class="spec"><b>ML-KEM-768</b><span>Post-quantum KEM</span></div>
+      <div class="spec"><b>HKDF-SHA256</b><span>Secret derivation</span></div>
+      <div class="spec"><b>AES-256-GCM</b><span>Authenticated seal</span></div>
+    </div>
+
+    <section class="layout">
+      <a class="panel sender" href="sender.html">
+        <div class="panel-head"><h2>Sender page / Alice</h2><span class="panel-index">01</span></div>
+        <div class="panel-body">
+          <div class="role"><div class="avatar">A</div><div><b>Give Bob three artifacts</b><span>encrypted file · metadata · public key</span></div></div>
+          <p class="panel-text">Pick any file up to 5 MB, encrypt it in the browser, and download the three artifacts Bob needs to receive it.</p>
+          <span class="panel-link">Open sender workspace →</span>
+        </div>
+      </a>
+      <a class="panel receiver" href="receiver.html">
+        <div class="panel-head"><h2>Receiver page / Bob</h2><span class="panel-index">02</span></div>
+        <div class="panel-body">
+          <div class="role"><div class="avatar">B</div><div><b>Receive in three separate spaces</b><span>file · metadata · public key</span></div></div>
+          <p class="panel-text">Attach Alice's artifacts, match the package ID across all three, and recover the original file locally.</p>
+          <span class="panel-link">Open receiver portal →</span>
+        </div>
+      </a>
+    </section>
+
+    <section class="trace">
+      <div class="trace-head"><span>The handoff in four moves</span><span class="trace-count">Start here</span></div>
+      <div class="trace-row">
+        <div class="trace-step active">01 · Alice<span>writes / selects file</span></div>
+        <div class="trace-step">02 · Package<span>three downloads</span></div>
+        <div class="trace-step">03 · Bob<span>attaches artifacts</span></div>
+        <div class="trace-step">04 · Unlock<span>verify + recover</span></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>X25519 + ML-KEM-768 + AES-256-GCM</span>
+      <span>Local prototype / 2026</span>
+    </footer>
+  </main>
+</body>
+</html>

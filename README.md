@@ -11,14 +11,6 @@
 
 An educational prototype demonstrating secure file exchange between two users by combining classical, post-quantum, and symmetric cryptography.
 
-## Screenshots
-
-### Sender Side
-![Sender UI](screenshots/sender.png)
-
-### Receiver Side  
-![Receiver UI](screenshots/receiver.png)
-
 ## Features
 
 - **AES-256-GCM**: Fast file encryption with authenticated encryption
@@ -94,6 +86,14 @@ python hybrid_kdf_test.py
 5. Bob reconstructs shared secrets using his private keys
 6. AES key is derived and file is decrypted
 
+
+## Screenshots
+
+### Sender Side
+![Sender UI](screenshots/sender.png)
+
+### Receiver Side  
+![Receiver UI](screenshots/receiver.png)
 ## Security Notes
 
 - Never commit private keys, AES keys, shared secrets, credentials, or generated output files

@@ -1,9 +1,117 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Receiver | Hybrid Crypto Lab</title><link rel="stylesheet" href="styles.css"></head>
-<body><main class="shell">
-<header class="topbar"><a class="brand" href="index.html"><span class="mark">↯</span><span>HYBRID CRYPTO LAB<small>secure exchange / prototype</small></span></a><a class="back" href="sender.html">← Sender page</a></header>
-<section class="hero"><div class="eyebrow">Receiver portal / Bob</div><h1>Unlock what<br><span style="color:var(--teal)">arrived.</span></h1><p>Attach the encrypted file, metadata, and public key Alice sent you. Bob can recover the original PDF, DOCX, MP4, or other file only after the package is checked as one unit.</p></section>
-<form class="layout receiver" id="receiverForm"><section class="panel"><div class="panel-head"><h2>1 / Receive encrypted package</h2><p id="receiverStatus">Waiting for Alice's handoff</p></div><div class="panel-body"><div class="role"><div class="avatar">B</div><div><b>Bob Chen</b><span>receiver · private keys stay here</span></div></div><label class="label" for="receivedFile">Encrypted file</label><label class="drop" for="receivedFile"><strong>Choose Alice's encrypted file</strong><span>message.enc · ciphertext only</span><input id="receivedFile" type="file" accept=".enc,.txt,text/plain"></label><label class="label" for="receivedMetadata">Metadata</label><label class="drop" for="receivedMetadata"><strong>Choose metadata.json</strong><span>nonce + algorithm + package ID</span><input id="receivedMetadata" type="file" accept=".json,application/json"></label><label class="label" for="receivedKey">Public key</label><label class="drop" for="receivedKey"><strong>Choose public-key.txt</strong><span>public key + package ID</span><input id="receivedKey" type="file" accept=".txt,text/plain"></label><p id="matchStatus" class="micro" style="text-align:left">Waiting for the same encrypted package, metadata, and public key</p><button class="primary" id="unlockButton" type="submit" disabled>Unlock and verify →</button></div></section>
-<aside class="panel side"><div class="kicker">2 / Verify the handoff</div><h3 style="margin-top:10px">What Bob checks</h3><p>The package ID must be identical in the metadata and public-key files. That gives this prototype a clear, visible handoff check.</p><div class="artifact"><span class="artifact-icon">✓</span><div><b>Metadata</b><span>algorithm + package ID</span></div></div><div class="artifact"><span class="artifact-icon">✓</span><div><b>Public key</b><span>X25519 + ML-KEM reference</span></div></div><div class="artifact"><span class="artifact-icon">✓</span><div><b>Private keys</b><span>never uploaded or shared</span></div></div><button class="copy" style="margin-top:20px;width:100%;padding:12px" id="useLatestPackage" type="button">Use latest local package</button><div class="result" id="unlockResult"><strong>Authenticated text recovered</strong><pre id="unlockedText"></pre></div></aside></form>
-<section class="trace"><div class="trace-head"><span>Bob's reconstruction</span><span class="trace-count">RECEIVER TRACE</span></div><div class="trace-row"><div class="trace-step active">01 · Receive<span>three artifacts</span></div><div class="trace-step">02 · Match<span>package IDs</span></div><div class="trace-step">03 · Rebuild<span>hybrid secret</span></div><div class="trace-step">04 · Verify<span>plaintext opens</span></div></div></section><footer class="footer"><span>PRIVATE KEYS NEVER LEAVE BOB</span><span>LOCAL PROTOTYPE / 2026</span></footer></main><div class="toast" id="toast" role="status"></div><script src="app.js"></script></body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Receiver · Hybrid Crypto Lab</title>
+  <meta name="description" content="Bob verifies the package ID across the encrypted file, metadata, and public key — then unlocks the original file locally.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050607'/%3E%3Cpath d='M18 5 9 18h5l-2 9 9-13h-5z' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <svg class="shape-a" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#ffffff" stroke-width="1">
+        <circle cx="470" cy="190" r="230" stroke-opacity=".14"/>
+        <circle cx="470" cy="190" r="150" stroke-opacity=".08"/>
+        <path d="M40 60 L360 380 L430 320 Z" stroke-opacity=".45"/>
+        <path d="M40 60 L430 320 L560 470 Z" stroke-opacity=".28"/>
+        <path d="M40 60 L560 470 L700 640" stroke-opacity=".55"/>
+        <path d="M40 60 L360 380 L250 470 Z" stroke-opacity=".2"/>
+        <path d="M40 60 L250 470 L180 620 Z" stroke-opacity=".14"/>
+        <line x1="40" y1="60" x2="690" y2="560" stroke-opacity=".3" stroke-dasharray="16 8 4 8"/>
+        <line x1="430" y1="320" x2="690" y2="560" stroke-opacity=".18" stroke-dasharray="1 7"/>
+      </g>
+    </svg>
+    <svg class="shape-b" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#ffffff" stroke-width="1">
+        <circle cx="150" cy="500" r="210" stroke-opacity=".12"/>
+        <path d="M600 80 L280 380 L210 320 Z" stroke-opacity=".45"/>
+        <path d="M600 80 L210 320 L90 470 Z" stroke-opacity=".26"/>
+        <path d="M600 80 L90 470 L0 620" stroke-opacity=".5"/>
+        <path d="M600 80 L280 380 L360 500 Z" stroke-opacity=".18"/>
+        <line x1="600" y1="80" x2="20" y2="540" stroke-opacity=".28" stroke-dasharray="16 8 4 8"/>
+        <line x1="210" y1="320" x2="20" y2="540" stroke-opacity=".16" stroke-dasharray="1 7"/>
+      </g>
+    </svg>
+  </div>
+
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="mark">↯</span><span>HYBRID CRYPTO LAB<small>secure exchange · prototype</small></span></a>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="sender.html">Sender</a>
+        <a href="receiver.html" aria-current="page">Receiver</a>
+      </nav>
+      <span class="status"><i></i>Receiver portal</span>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">Receiver portal / Bob</div>
+      <h1>Unlock what<br><span class="shine">arrived.</span></h1>
+      <p>Attach the encrypted file, metadata, and public key Alice sent you. Bob recovers the original PDF, DOCX, MP4, or other file only after the package is verified as one unit.</p>
+    </section>
+
+    <form class="layout receiver" id="receiverForm">
+      <section class="panel">
+        <div class="panel-head"><h2>1 / Receive encrypted package</h2><p id="receiverStatus">Waiting for Alice's handoff</p></div>
+        <div class="panel-body">
+          <div class="role"><div class="avatar">B</div><div><b>Bob Chen</b><span>receiver · private keys stay here</span></div></div>
+          <label class="label" for="receivedFile">Encrypted file</label>
+          <label class="drop" for="receivedFile">
+            <strong>Choose Alice's encrypted file</strong>
+            <span>message.enc · ciphertext only</span>
+            <input id="receivedFile" type="file" accept=".enc,.txt,text/plain">
+          </label>
+          <label class="label" for="receivedMetadata">Metadata</label>
+          <label class="drop" for="receivedMetadata">
+            <strong>Choose metadata.json</strong>
+            <span>nonce + algorithm + package ID</span>
+            <input id="receivedMetadata" type="file" accept=".json,application/json">
+          </label>
+          <label class="label" for="receivedKey">Public key</label>
+          <label class="drop" for="receivedKey">
+            <strong>Choose public-key.txt</strong>
+            <span>public key + package ID</span>
+            <input id="receivedKey" type="file" accept=".txt,text/plain">
+          </label>
+          <p id="matchStatus" class="micro" style="text-align:left">Waiting for the same encrypted package, metadata, and public key</p>
+          <button class="primary" id="unlockButton" type="submit" disabled>Unlock and verify →</button>
+        </div>
+      </section>
+
+      <aside class="panel side">
+        <div class="kicker">2 / Verify the handoff</div>
+        <h3>What Bob checks</h3>
+        <p>The package ID must be identical in the metadata and public-key files. That gives this prototype a clear, visible handoff check.</p>
+        <div class="artifact"><span class="artifact-icon">✓</span><div><b>Metadata</b><span>algorithm + package ID</span></div></div>
+        <div class="artifact"><span class="artifact-icon">✓</span><div><b>Public key</b><span>X25519 + ML-KEM reference</span></div></div>
+        <div class="artifact"><span class="artifact-icon">✓</span><div><b>Private keys</b><span>never uploaded or shared</span></div></div>
+        <button class="copy" style="margin-top:20px;width:100%;padding:12px" id="useLatestPackage" type="button">Use latest local package</button>
+        <div class="result" id="unlockResult"><strong>Authenticated file recovered</strong><pre id="unlockedText"></pre></div>
+      </aside>
+    </form>
+
+    <section class="trace">
+      <div class="trace-head"><span>Bob's reconstruction</span><span class="trace-count">Receiver trace</span></div>
+      <div class="trace-row">
+        <div class="trace-step active">01 · Receive<span>three artifacts</span></div>
+        <div class="trace-step">02 · Match<span>package IDs</span></div>
+        <div class="trace-step">03 · Rebuild<span>hybrid secret</span></div>
+        <div class="trace-step">04 · Verify<span>plaintext opens</span></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Private keys never leave Bob</span>
+      <span>Local prototype / 2026</span>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

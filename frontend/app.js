@@ -56,7 +56,11 @@ if (senderForm) {
   const sourceFile = document.getElementById('sourceFile');
   sourceFile.addEventListener('change', () => {
     const file = sourceFile.files[0];
-    if (file) document.getElementById('sourceFileName').textContent = `${file.name} · ${(file.size / 1048576).toFixed(2)} MB`;
+    if (!file) return;
+    const drop = sourceFile.closest('.drop');
+    document.getElementById('sourceFileName').textContent = file.name;
+    drop.querySelector('span').textContent = `${(file.size / 1048576).toFixed(2)} MB · ready to encrypt`;
+    drop.classList.add('ready');
   });
   const packageId = document.getElementById('packageId');
   senderForm.addEventListener('submit', async (event) => {
@@ -157,3 +161,25 @@ function validateReceiver() {
   document.getElementById('matchStatus').textContent = valid ? `Package ${metadataId} matched across all three files` : 'Waiting for the same package file, metadata, and public key';
   return valid;
 }
+
+// Drag-and-drop support for every drop zone
+document.querySelectorAll('label.drop').forEach((drop) => {
+  const input = drop.querySelector('input[type="file"]');
+  if (!input) return;
+  ['dragenter', 'dragover'].forEach((type) => drop.addEventListener(type, (event) => {
+    event.preventDefault();
+    drop.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach((type) => drop.addEventListener(type, () => drop.classList.remove('dragover')));
+  drop.addEventListener('drop', (event) => {
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
+    if (!files?.length) return;
+    try {
+      input.files = files;
+      input.dispatchEvent(new Event('change'));
+    } catch {
+      notify('Drag and drop is not supported here — use the file picker instead.');
+    }
+  });
+});
