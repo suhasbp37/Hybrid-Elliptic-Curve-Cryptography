@@ -89,11 +89,15 @@ python hybrid_kdf_test.py
 
 ## Screenshots
 
+### Front Page  
+![Receiver UI](screenshots/Front.png)
+
+
 ### Sender Side
 ![Sender UI](screenshots/sender.png)
 
 ### Receiver Side  
-![Receiver UI](screenshots/receiver.png)
+![Receiver UI](screenshots/reciever.png)
 ## Security Notes
 
 - Never commit private keys, AES keys, shared secrets, credentials, or generated output files
